@@ -1,6 +1,7 @@
 import sys
 import random
 import time
+from PIL import Image
 
 class Apple:
     inp = {} 
@@ -134,39 +135,37 @@ def sentences2(FILE, prelim, delim):
 
     return s
 
-def binary(FILE):
-    b = []
-    byte = FILE.read(1)
-    while byte != "":
-        b.append(byte)
-        byte = FILE.read(1)
-    return b
+def image(FILE):
+    data = FILE.tobytes()
+    length=FILE.size[0]
+    height=FILE.size[1]
+    return [data[x:x+length] for x in range(0, len(data), length)]
 
 def run(root, s):
-    avg = [len(i) for i in s]
-    avg = sum(avg) / float(len(s))
-    total = 0
-    n = 0
-
-    while(True):
-        print("".join([i.key for i in root.bite().gex()]))
+    result = b''
+    size = 1920*200*3
+    while len(result) < size:
+        print(len(result)/size * 100)
+        for i in root.bite().gex():
+            result = result  + bytes([i.key])
+    return result
 
 def main():
     if len(sys.argv) < 2 :
         return
 
-    FILE=open(sys.argv[1])
+    FILE = Image.open(sys.argv[1])
 
     seed = random.getrandbits(8)
     random.seed(seed)
     # populate graph
     #s = sentences2(FILE, "<p>", "</p>")
     #s = sentences(FILE, ".")
-    s = words(FILE)
-    #s = binary(FILE)
+    s = image(FILE)
     root = learn(s)
-    #print(root.toString([]))
     #print("seed: ", seed)
-    run(root, s)
-
+    result = run(root, s)
+    print(len(result))
+    img = Image.frombytes('RGB', (2478,50), result)
+    img.show()
 main()
