@@ -3,8 +3,8 @@ import random
 import time
 
 class Apple:
-    inp = None 
-    out = None
+    inp = {} 
+    out = {}
     key = None
     sum = None
 
@@ -38,7 +38,7 @@ class Apple:
         self.sum += 1
 
     def toString(self):
-        return str(self.key) +  "\n\tin:" + str([str(i.key) + ":" + str(self.inp[i])  for i in self.inp]) + "\n\tout:" + str([str(i.key) + ":" + str(self.out[i])  for i in self.out]) + ":" + str(self.sum) 
+        return str(self.key) + ":\n\t" + str([str(i.toString()) + ":" + str(self.out[i])  for i in self.out]) 
 
     def bite(self):
         rng = random.randint(0, self.sum)
@@ -153,22 +153,22 @@ def run(root, s):
         #print(avg)
         #print(total/float(n))
 
-##init
-def init(floc):
-    FILE = None
+##main
+def main():
+    if len(sys.argv) < 2 :
+        return
 
-    if(floc):
-        FILE=open("./" + floc)
-    else:
-        FILE=open(sys.argv[1])
+    FILE=open(sys.argv[1])
 
     seed = random.getrandbits(8)
     random.seed(seed)
     # populate graph
-    s = sentences2(FILE, "<p>", "</p>")
+    #s = sentences2(FILE, "<p>", "</p>")
     #s = sentences(FILE, "\n")
-    #s = words(FILE)
+    s = words(FILE)
     root = learn(s)
-    run(root, s)
-    #print(root.toString())
-    print("seed: ", seed)
+    print(root.toString())
+    #print("seed: ", seed)
+    #run(root, s)
+
+main()
