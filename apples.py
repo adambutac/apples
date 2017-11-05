@@ -37,9 +37,6 @@ class Apple:
 
         self.sum += 1
 
-    def toString(self):
-        return str(self.key) + ":\n\t" + str([str(i.toString()) + ":" + str(self.out[i])  for i in self.out]) 
-
     def bite(self):
         rng = random.randint(0, self.sum)
         idx = 0
@@ -49,9 +46,6 @@ class Apple:
             if(rng <= idx):
                 return i
 
-        print(self.toString())
-        print(idx)
-        print(rng)
         return null
 
     def gex(self):
@@ -61,6 +55,15 @@ class Apple:
             chain.append(apple)
             apple = apple.bite()
         return chain
+
+    def toString(self, V):
+        if(self.key == None):
+            return "[None]"
+        if(self.key in V):
+            return str(self.key)
+
+        V.append(self.key)
+        return  str(self.key) + "".join(["\n\t" + i.toString(V) for i in self.out])
 
 def learn(s):
     root = Apple(None, "root")
@@ -107,7 +110,6 @@ def sentences2(FILE, prelim, delim):
     plm = " " * len(prelim)
     dlm = " " * len(delim)
 
-    print(plm)
     # turn s into a list of sentences 
     w = None 
     for li in FILE:
@@ -132,6 +134,14 @@ def sentences2(FILE, prelim, delim):
 
     return s
 
+def binary(FILE):
+    b = []
+    byte = FILE.read(1)
+    while byte != "":
+        b.append(byte)
+        byte = FILE.read(1)
+    return b
+
 def run(root, s):
     avg = [len(i) for i in s]
     avg = sum(avg) / float(len(s))
@@ -139,21 +149,8 @@ def run(root, s):
     n = 0
 
     while(True):
-    #for i in range(0, 1000000):
-        chain = root.bite().gex()
-        total += len(chain)
-        n += 1
         print("".join([i.key for i in root.bite().gex()]))
-        #time.sleep(0.4)
-        # check if new elements are being generated
-        # and not just elements that only exist
-        #if chain not in s:
-        #    break
 
-        #print(avg)
-        #print(total/float(n))
-
-##main
 def main():
     if len(sys.argv) < 2 :
         return
@@ -164,11 +161,12 @@ def main():
     random.seed(seed)
     # populate graph
     #s = sentences2(FILE, "<p>", "</p>")
-    #s = sentences(FILE, "\n")
+    #s = sentences(FILE, ".")
     s = words(FILE)
+    #s = binary(FILE)
     root = learn(s)
-    print(root.toString())
+    #print(root.toString([]))
     #print("seed: ", seed)
-    #run(root, s)
+    run(root, s)
 
 main()
