@@ -46,7 +46,7 @@ class Apple:
             if(rng <= idx):
                 return i
 
-        return null
+        return None
 
     def gex(self):
         chain = []
@@ -161,8 +161,8 @@ def main():
     random.seed(seed)
     # populate graph
     #s = sentences2(FILE, "<p>", "</p>")
-    #s = sentences(FILE, ".")
-    s = words(FILE)
+    s = sentences(FILE, ".")
+    #s = words(FILE)
     #s = binary(FILE)
     root = learn(s)
     #print(root.toString([]))
