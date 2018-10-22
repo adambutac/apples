@@ -1,6 +1,7 @@
 import sys
 import random
 import time
+import pickle
 
 class Apple:
     inp = {} 
@@ -56,14 +57,14 @@ class Apple:
             apple = apple.bite()
         return chain
 
-    def toString(self, V):
+    def toString(self, V, d):
         if(self.key == None):
             return "[None]"
         if(self.key in V):
             return str(self.key)
 
         V.append(self.key)
-        return  str(self.key) + "".join(["\n\t" + i.toString(V) for i in self.out])
+        return  str(self.key) + "".join(["\n" + "\t"*d + str(self.out[i] / i.sum) + " " + i.toString(V, d+1) for i in self.out if not i.sum == None])
 
 def learn(s):
     root = Apple(None, "root")
@@ -148,14 +149,20 @@ def run(root, s):
     total = 0
     n = 0
 
-    while(True):
-        print("".join([i.key for i in root.bite().gex()]))
+    state_f=open('state.txt', 'w', encoding='utf8')
+    state_f.write(root.toString([], 0))
+
+    rand_sentences_f=open('100 random sentences.txt', 'w', encoding='utf8')
+
+    #while(True):
+    for i in range(100):
+        rand_sentences_f.write("".join([i.key for i in root.bite().gex()]))
 
 def main():
     if len(sys.argv) < 2 :
         return
 
-    FILE=open(sys.argv[1])
+    FILE=open(sys.argv[1], encoding='utf8')
 
     seed = random.getrandbits(8)
     random.seed(seed)
