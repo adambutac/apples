@@ -97,6 +97,7 @@ def sentences(FILE, delim):
     for li in FILE:
         for ch in li:
             w += ch
+            w=w.strip()
             if(ch in delim):
                 s[-1].append(w)
                 s.append([])
@@ -144,7 +145,7 @@ def binary(FILE):
         byte = FILE.read(1)
     return b
 
-def run(root, s):
+def run(fname, root, s):
     avg = [len(i) for i in s]
     avg = sum(avg) / float(len(s))
     total = 0
@@ -153,7 +154,7 @@ def run(root, s):
     state_f=open('state.txt', 'w', encoding='utf8')
     state_f.write(root.toString([], 0))
 
-    rand_sentences_f=open('100 random sentences.txt', 'w', encoding='utf8')
+    rand_sentences_f=open(fname+'-random.txt', 'w', encoding='utf8')
 
     #while(True):
     for i in range(100):
@@ -163,19 +164,23 @@ def main():
     if len(sys.argv) < 2 :
         return
 
-    FILE=open(sys.argv[1], encoding='utf8')
+    fname=sys.argv[1]
+
+    FILE=open(fname, encoding='utf8')
 
     seed = random.getrandbits(8)
     random.seed(seed)
     # populate graph
     #s = sentences2(FILE, "<p>", "</p>")
-    s = sentences(FILE, ".")
+    s = sentences(FILE, "\n")
+    for i in s:
+        print(i)
     #s = words(FILE)
     #s = binary(FILE)
     root = learn(s)
     #print(root.toString([]))
     #print("seed: ", seed)
-    run(root, s)
+    run(fname, root, s)
     return root
 
 r=main()
