@@ -64,7 +64,7 @@ class Apple:
             return str(self.key)
 
         V.append(self.key)
-        return  str(self.key) + "".join(["\n" + "\t"*d + str(self.out[i] / i.sum) + " " + i.toString(V, d+1) for i in self.out if not i.sum == None])
+        return  str(self.key) + "".join(["\n" + "\t"*d + str(self.out[i] / self.sum) + " " + i.toString(V, d+1) for i in self.out])
 
 def learn(s):
     root = Apple(None, "root")
@@ -74,6 +74,7 @@ def learn(s):
     for w in s:
         apple = root
         for l in w:
+            l=l.strip()
             if l in G:
                 apple.append(G[l])
                 apple = G[l]
@@ -156,7 +157,7 @@ def run(root, s):
 
     #while(True):
     for i in range(100):
-        rand_sentences_f.write("".join([i.key for i in root.bite().gex()]))
+        rand_sentences_f.write(" ".join([i.key for i in root.bite().gex()]) + "\n")
 
 def main():
     if len(sys.argv) < 2 :
@@ -175,5 +176,6 @@ def main():
     #print(root.toString([]))
     #print("seed: ", seed)
     run(root, s)
+    return root
 
-main()
+r=main()
