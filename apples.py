@@ -48,13 +48,14 @@ class Apple:
     def toString(self, V):
         if(self.key == None):
             return "[None]"
-        if(self.key in V):
+        ##several nodes can share a key, so track visited nodes
+        if(self in V):
             return str(self.key)
 
-        V.append(self.key)
+        V.append(self)
         return  str(self.key) + "".join(["\n\t" + i.toString(V) for i in self.out])
 
-def learn(s):
+def learn(s, n):
     root = Apple(None, "root")
     null = Apple(None, None)
 
@@ -65,13 +66,15 @@ def learn(s):
             continue
 
         apple = root
-        for l in w:
-            if l in G:
-                apple.append(G[l])
-                apple = G[l]
+        for i in range(len(w)):
+            ##state is the last n tokens (fewer at the start of w)
+            ctx = tuple(w[max(0, i - n + 1):i + 1])
+            if ctx in G:
+                apple.append(G[ctx])
+                apple = G[ctx]
             else:
-                apple = Apple(apple, l)
-                G[l] = apple
+                apple = Apple(apple, w[i])
+                G[ctx] = apple
 
         apple.append(null)
 
@@ -144,6 +147,8 @@ def main():
         return
 
     FILE=open(sys.argv[1])
+    # how many previous tokens each state remembers
+    order = int(sys.argv[2]) if len(sys.argv) > 2 else 3
 
     seed = random.getrandbits(8)
     random.seed(seed)
@@ -152,7 +157,7 @@ def main():
     #s = sentences(FILE, ".")
     s = words(FILE)
     #s = binary(FILE)
-    root = learn(s)
+    root = learn(s, order)
     #print(root.toString([]))
     #print("seed: ", seed)
     run(root, s)
