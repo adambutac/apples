@@ -1,21 +1,12 @@
 import sys
 import random
-import time
 
 class Apple:
-    inp = {} 
-    out = {}
-    key = None
-    sum = None
-
     def __init__(self, prt, val):
-        if not (prt == None):
-            self.inp = {}
-
-        if not (val == None):
-            self.out = {}
-            self.key = val
-            self.sum = 0
+        self.inp = {}
+        self.out = {}
+        self.key = val
+        self.sum = 0
 
         if not(prt == None):
             self.inp[prt] = 1
@@ -27,26 +18,24 @@ class Apple:
         if vtx in self.out:
             ##inc weight on edge
             self.out[vtx] += 1
-            if not (vtx.inp == None):
-                vtx.inp[self] += 1
+            vtx.inp[self] += 1
         else:
             ##new edge
             self.out[vtx] = 1
-            if not (vtx.inp == None):
-                vtx.inp[self] = 1
+            vtx.inp[self] = 1
 
         self.sum += 1
 
     def bite(self):
-        rng = random.randint(0, self.sum)
+        rng = random.randint(1, self.sum)
         idx = 0
-        
+
         for i in self.out:
             idx += self.out[i]
             if(rng <= idx):
                 return i
 
-        return null
+        return None
 
     def gex(self):
         chain = []
@@ -71,6 +60,10 @@ def learn(s):
 
     G = {}
     for w in s:
+        ##skip blank lines / empty sentences
+        if not w:
+            continue
+
         apple = root
         for l in w:
             if l in G:
@@ -126,7 +119,7 @@ def sentences2(FILE, prelim, delim):
                 w = ""
                 s.append([])
             # end the sentence
-            if(dlm == delim):
+            if(dlm == delim and not (w == None)):
                 w = w[:-len(delim)]
                 s[len(s) - 1].append(w)
                 w = None
@@ -135,18 +128,13 @@ def sentences2(FILE, prelim, delim):
     return s
 
 def binary(FILE):
-    b = []
-    byte = FILE.read(1)
-    while byte != "":
-        b.append(byte)
-        byte = FILE.read(1)
-    return b
+    # the whole file is one long sequence of characters
+    return [FILE.read()]
 
 def run(root, s):
-    avg = [len(i) for i in s]
-    avg = sum(avg) / float(len(s))
-    total = 0
-    n = 0
+    ##nothing was learned (empty input)
+    if root.sum == 0:
+        return
 
     while(True):
         print("".join([i.key for i in root.bite().gex()]))
