@@ -2,11 +2,13 @@ import sys
 import random
 
 class Apple:
-    def __init__(self, prt, val):
+    def __init__(self, prt, val, ctx=None):
         self.inp = {}
         self.out = {}
         self.key = val
         self.sum = 0
+        ##the last n tokens this node stands for (for toString)
+        self.ctx = ctx if not (ctx == None) else val
 
         if not(prt == None):
             self.inp[prt] = 1
@@ -45,15 +47,27 @@ class Apple:
             apple = apple.bite()
         return chain
 
-    def toString(self, V):
+    def name(self):
         if(self.key == None):
-            return "[None]"
-        ##several nodes can share a key, so track visited nodes
-        if(self in V):
-            return str(self.key)
+            return "[END]"
+        ##escape whitespace so spaces/newlines in a context stay visible
+        return repr("".join(self.ctx))[1:-1].replace(" ", "_")
 
-        V.append(self)
-        return  str(self.key) + "".join(["\n\t" + i.toString(V) for i in self.out])
+    def toString(self):
+        ##one line per node: context -> next contexts with edge weights
+        lines = []
+        V = {self}
+        queue = [self]
+        for apple in queue:
+            if(apple.key == None):
+                continue
+            edges = sorted(apple.out.items(), key=lambda e: -e[1])
+            lines.append(apple.name() + " -> " + ", ".join([i.name() + " x" + str(c) for i, c in edges]))
+            for i, c in edges:
+                if not (i in V):
+                    V.add(i)
+                    queue.append(i)
+        return "\n".join(lines)
 
 def learn(s, n):
     root = Apple(None, "root")
@@ -73,7 +87,7 @@ def learn(s, n):
                 apple.append(G[ctx])
                 apple = G[ctx]
             else:
-                apple = Apple(apple, w[i])
+                apple = Apple(apple, w[i], ctx)
                 G[ctx] = apple
 
         apple.append(null)
@@ -158,7 +172,7 @@ def main():
     s = words(FILE)
     #s = binary(FILE)
     root = learn(s, order)
-    #print(root.toString([]))
+    #print(root.toString())
     #print("seed: ", seed)
     run(root, s)
 
